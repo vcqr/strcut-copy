@@ -13,6 +13,7 @@ type ArticleDto struct {
 	Author    *User     `json:"author"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Comment   []string  `json:"comment"`
 }
 
 type User struct {

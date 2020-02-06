@@ -15,6 +15,7 @@ type Article struct {
 	Author    *pkg_user.User `json:"author"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
+	Comment   []string       `json:"comment"`
 }
 
 func NewArticle() *Article {
@@ -30,6 +31,7 @@ func (a *Article) GetArticle() *Article {
 		CatId:   1,
 		Content: "This is an article on struct copy, which you can use as follows",
 		Hits:    100,
+		Comment: []string{"nice", "good"},
 		Author: &pkg_user.User{
 			Id:       1,
 			NickName: "Tom",

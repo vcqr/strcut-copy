@@ -25,6 +25,8 @@ func TestStructUtils_CopyProperties(t *testing.T) {
 
 	a.Equal(int64(1), articleVo.Author.Id)
 	a.Equal("Tom", articleVo.Author.NickName)
+
+	a.Equal(2, len(articleVo.Comment))
 }
 
 func BenchmarkStructUtils_CopyProperties(b *testing.B) {

@@ -70,18 +70,20 @@ func (st *StructUtils) CopyProperties(target, source interface{}) error {
 
 				if riEndName == dtEndName {
 					if destFieldV.Kind() == reflect.Ptr {
+						if ri.v.IsNil() {
+							continue
+						}
+
 						// 目标结构是指针，则需要初始化
 						if destFieldV.IsNil() {
 							destFieldV.Set(reflect.New(destFieldT.Type.Elem()))
 						}
 
-						err := st.CopyProperties(destFieldV.Interface(), ri.v.Interface())
-						if err != nil {
+						if err := st.CopyProperties(destFieldV.Interface(), ri.v.Interface()); err != nil {
 							return err
 						}
 					} else {
-						err := st.CopyProperties(destFieldV.Addr().Interface(), ri.v.Interface())
-						if err != nil {
+						if err := st.CopyProperties(destFieldV.Addr().Interface(), ri.v.Interface()); err != nil {
 							return err
 						}
 					}
