@@ -20,7 +20,7 @@ var srcStruct = struct {
     Name string
 } {
     Id: 10000,
-    Name: "test"
+    Name: "test",
 }
 
 structUtils := NewStructUtils()
