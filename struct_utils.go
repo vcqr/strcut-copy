@@ -1,6 +1,7 @@
 package structutils
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 )
@@ -62,11 +63,14 @@ func (st *StructUtils) CopyProperties(target, source interface{}) error {
 		destFieldT := destT.Field(i)
 
 		if ri, ok := srcMap[destFieldT.Name]; ok {
+			//fmt.Println(ri.t, destFieldT.Type)
 			if ri.t == destFieldT.Type {
 				destV.Field(i).Set(ri.v)
 			} else {
 				riEndName := st.getTypeEndName(ri.t.String())
 				dtEndName := st.getTypeEndName(destFieldT.Type.String())
+
+				//fmt.Println(destFieldT.Type.String(), ri.t.String(), destFieldV.Kind().String())
 
 				if riEndName == dtEndName {
 					if destFieldV.Kind() == reflect.Ptr {
@@ -80,16 +84,99 @@ func (st *StructUtils) CopyProperties(target, source interface{}) error {
 						}
 
 						if err := st.CopyProperties(destFieldV.Interface(), ri.v.Interface()); err != nil {
-							return err
+							//return err
+							continue
 						}
+					} else if destFieldV.Kind() == reflect.Slice {
+						di := &ReflectInfo{
+							t: destFieldT.Type,
+							v: destFieldV,
+						}
+						st.SliceCopyProperties(di, ri)
+					} else if destFieldV.Kind() == reflect.Map {
+						di := &ReflectInfo{
+							t: destFieldT.Type,
+							v: destFieldV,
+						}
+						st.MapCopyProperties(di, ri)
 					} else {
 						if err := st.CopyProperties(destFieldV.Addr().Interface(), ri.v.Interface()); err != nil {
-							return err
+							//return err
+							fmt.Println(err)
+							continue
 						}
 					}
 				}
 			}
 		}
+	}
+
+	return nil
+}
+
+func (st *StructUtils) SliceCopyProperties(dest, src *ReflectInfo) error {
+	if src.v.Kind() != reflect.Slice {
+		return nil
+	}
+
+	iL := src.v.Len()
+	arr := reflect.MakeSlice(dest.t, iL, iL)
+
+	var idxT reflect.Type
+	for i := 0; i < arr.Len(); i++ {
+		item := arr.Index(i)
+		if idxT == nil {
+			idxT = arr.Index(i).Type()
+		}
+
+		if item.Kind() == reflect.Ptr {
+			if src.v.Index(i).IsNil() {
+				continue
+			}
+
+			// 指针类型需要初始化数据
+			item.Set(reflect.New(idxT.Elem()))
+			st.CopyProperties(item.Interface(), src.v.Index(i).Interface())
+
+		} else {
+			st.CopyProperties(item.Addr().Interface(), src.v.Index(i).Interface())
+		}
+	}
+
+	if !arr.IsNil() {
+		dest.v.Set(arr)
+	}
+
+	return nil
+}
+
+func (st *StructUtils) MapCopyProperties(dest, src *ReflectInfo) error {
+	iL := src.v.Len()
+	mp := reflect.MakeMapWithSize(dest.t, iL)
+
+	for _, k := range src.v.MapKeys() {
+		if src.v.MapIndex(k).IsNil() {
+			continue
+		}
+
+		if dest.t.Elem().Kind() == reflect.Ptr {
+			// 指针类型需要初始化数据
+			item := reflect.New(dest.t.Elem().Elem())
+			st.CopyProperties(item.Interface(), src.v.MapIndex(k).Interface())
+
+			mp.SetMapIndex(k, item)
+
+		} else {
+			// 初始化数据
+			item := reflect.New(dest.t.Elem())
+			st.CopyProperties(item.Interface(), src.v.MapIndex(k).Interface())
+
+			mp.SetMapIndex(k, item.Elem())
+		}
+	}
+
+	if !mp.IsNil() {
+		dest.v.Set(mp)
 	}
 
 	return nil
