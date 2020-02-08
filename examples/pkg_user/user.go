@@ -6,3 +6,8 @@ type User struct {
 	Avatar   string `json:"avatar"`
 	Email    string `json:"email"`
 }
+
+type Comment struct {
+	Author *User
+	Text   string
+}
