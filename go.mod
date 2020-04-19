@@ -1,4 +1,4 @@
-module structutils
+module github.com/vcqr/structutils
 
 go 1.12
 
