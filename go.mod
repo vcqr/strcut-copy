@@ -1,4 +1,4 @@
-module github.com/vcqr/structutils
+module github.com/vcqr/strcut-copy
 
 go 1.12
 
