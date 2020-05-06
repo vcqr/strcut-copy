@@ -122,6 +122,39 @@ func (st *StructUtils) CopyProperties(target, source interface{}) error {
 	return nil
 }
 
+// 结构体转map
+func (st *StructUtils) StructToMap(source interface{}) map[string]interface{} {
+	destMp := make(map[string]interface{})
+	srcV, srcT, err := st.getSourceReflectInfo(source)
+	if err != nil {
+		return destMp
+	}
+	
+	for i := 0; i < srcT.NumField(); i++ {
+		field := srcT.Field(i)
+		srcFieldV := srcV.Field(i)
+		if !srcFieldV.CanSet() {
+			continue
+		}
+		
+		tag, option := parseTag(field.Tag.Get("json"), ",")
+		if tag == "-" || option == "omitempty" {
+			continue
+		}
+		
+		key := field.Name
+		if tag != "" {
+			key = tag
+		}
+		
+		destMp[key] = srcFieldV.Interface()
+		
+	}
+	
+	return destMp
+}
+
+
 func (st *StructUtils) ArrayCopyProperties(dest, src *ReflectInfo) error {
 	iL := st.Min(dest.t.Len(), src.t.Len())
 	var idxT reflect.Type

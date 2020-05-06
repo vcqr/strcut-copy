@@ -2,9 +2,9 @@ package struct_copy
 
 import (
 	"testing"
-	
+
 	"github.com/stretchr/testify/assert"
-	
+
 	"github.com/vcqr/struct-copy/examples/pkg_api/dto"
 	"github.com/vcqr/struct-copy/examples/pkg_article"
 )
@@ -66,4 +66,29 @@ func BenchmarkStructUtils_CopyProperties(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		util.CopyProperties(&articleVo, article)
 	}
+}
+
+func TestStructUtils_StructToMap(t *testing.T) {
+	type TestCase struct {
+		A int    `json:"a"`
+		B string `json:"b"`
+		C float64
+		D string `json:"-"`
+		E string `json:"e,omitempty"`
+		f string
+	}
+
+	cases := TestCase{
+		A: 123456,
+		B: "abcdef",
+		C: 0.001,
+		D: "abcdef",
+		f: "abcdef",
+	}
+
+	ret := util.StructToMap(&cases)
+
+	a := assert.New(t)
+
+	a.Equal(3, len(ret))
 }
