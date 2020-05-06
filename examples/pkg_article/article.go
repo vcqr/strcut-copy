@@ -2,8 +2,8 @@ package pkg_article
 
 import (
 	"time"
-
-	"structutils/examples/pkg_user"
+	
+	"github.com/vcqr/struct-copy/examples/pkg_user"
 )
 
 type Article struct {

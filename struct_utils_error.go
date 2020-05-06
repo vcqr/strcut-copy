@@ -1,4 +1,4 @@
-package structutils
+package struct_copy
 
 type StructUtilsError struct {
 	err string

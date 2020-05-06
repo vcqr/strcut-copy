@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
-	"structutils"
-	"structutils/examples/pkg_api/dto"
-	"structutils/examples/pkg_article"
+	
+	structUtil "github.com/vcqr/struct-copy"
+	"github.com/vcqr/struct-copy/examples/pkg_api/dto"
+	"github.com/vcqr/struct-copy/examples/pkg_article"
 )
 
 func showHandler(w http.ResponseWriter, r *http.Request) {
@@ -15,7 +15,7 @@ func showHandler(w http.ResponseWriter, r *http.Request) {
 	article := articleService.GetArticle()
 
 	var vo dto.ArticleDto
-	structutils.NewStructUtils().CopyProperties(&vo, article)
+	structUtil.NewStructUtils().CopyProperties(&vo, article)
 
 	vo.Hits++
 

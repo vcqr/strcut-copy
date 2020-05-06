@@ -1,12 +1,12 @@
-package structutils
+package struct_copy
 
 import (
 	"testing"
-
-	"structutils/examples/pkg_api/dto"
-	"structutils/examples/pkg_article"
-
+	
 	"github.com/stretchr/testify/assert"
+	
+	"github.com/vcqr/struct-copy/examples/pkg_api/dto"
+	"github.com/vcqr/struct-copy/examples/pkg_article"
 )
 
 var util = NewStructUtils()
